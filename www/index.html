@@ -25,12 +25,84 @@
   <body ng-app="starter">
 
     <ion-pane>
-      <ion-header-bar class="bar-stable">
+      <ion-header-bar class="bar-assertive">
         <h1 class="title">Bal des parisiennes</h1>
       </ion-header-bar>
       <ion-content ng-controller="BarCodeController">
-			<button class="button" ng-click="scanBarcode()">Scanner</button>
+		<div class="list list-inset">
+              <label class="item item-input">
+				<input type="text" placeholder="Pr&#xE9;nom" ng-model="prenom">
+			  </label>
+			  <label class="item item-input">
+				<input type="text" placeholder="Nom" ng-model="nom">
+			  </label>
+          </div>
+          <div class="padding">
+            <button class="button button-block button-assertive icon-left ion-search" ng-click="search(nom, prenom)">
+              Rechercher
+            </button>
+            <p class="text-center">
+              <br>
+			  <br>
+			  <b>Ou</b>
+			  <br>
+			  <br>
+            </p>
+          </div>
+		  <div class="padding">
+			<button class="button button-block button-assertive icon-left ion-qr-scanner" ng-click="scanBarcode()">Scanner</button>
+		</div>
       </ion-content>
     </ion-pane>
+	<script id="result.html" type="text/ng-template">
+	  <ion-modal-view>
+		<ion-header-bar class="bar-assertive">
+		  <h1 class="title">Résultat</h1>
+		</ion-header-bar>
+		<ion-content>
+		  <div class="list">
+            <div class="item item-button-right" ng-repeat="item in result">
+				<h2>{{item.prenom}} {{item.nom}}</h2>
+				<p>{{item.email}}</p>
+				<button class="button button-assertive">
+				  <i class="icon ion-checkmark-round"></i>
+				</button>
+			</div>
+            
+          </div>
+		</ion-content>
+	  </ion-modal-view>
+    </script>
+	<script id="valid.html" type="text/ng-template">
+	  <ion-modal-view>
+		<ion-header-bar class="bar-assertive">
+		  <h1 class="title">Validation</h1>
+		</ion-header-bar>
+		<ion-content>
+		  <div class="list">
+            <label class="item item-input">
+              <span class="input-label">Prenom</span>
+              <input type="text" ng-model="invite.prenom">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Nom</span>
+              <input type="text" ng-model="invite.nom">
+            </label>
+			<label class="item item-input">
+              <span class="input-label">Email</span>
+              <input type="text" ng-model="invite.email">
+            </label>
+          </div>
+          <div class="padding">
+            <button class="button button-block button-assertive icon-left ion-checkmark-round" ng-click="valid(invite)">
+              Valider
+            </button>
+            <p class="text-center">
+              <a href="#" ng-click="cancel()">annuler</a>
+            </p>
+          </div>
+		</ion-content>
+	  </ion-modal-view>
+    </script>
   </body>
 </html>

@@ -18,11 +18,87 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
   });
 })
 
-app.controller("BarCodeController", function($scope, $cordovaBarcodeScanner) {
- 
+app.controller("BarCodeController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup) {
+	$scope.nom = '';
+	$scope.prenom = '';
+	
+	$scope.cancel = function() {
+		$scope.modal.hide();
+	}
+	
+	$scope.valid = function(invite) {
+		var alertPopup = $ionicPopup.alert({
+		 title: 'Validation',
+		 scope: $scope,
+		 template: '{{invite.prenom}} {{invite.nom}} est bien validé pour venir au bal des parisiennes',
+		 buttons: [
+		  {
+			text: '<b>Ok</b>',
+			type: 'button-assertive'
+		  }
+		]
+	   });
+	   alertPopup.then(function(res) {
+		 console.log('valid');
+		 $scope.modal.hide();
+	   });
+	}
+	
+	$scope.openModal = function(invite) {
+		console.log(invite);
+		$scope.invite = invite;
+		$ionicModal.fromTemplateUrl('valid.html', function($ionicModal) {
+					$scope.modal = $ionicModal;
+					$ionicModal.show();
+				}, {
+					// Use our scope for the scope of the modal to keep it simple
+					scope: $scope,
+					// The animation we want to use for the modal entrance
+					animation: 'slide-in-up'
+				});
+	}
+	
+	$scope.displayResultSearch = function(result) {
+		console.log(result);
+		$scope.result = result;
+		$ionicModal.fromTemplateUrl('result.html', function($ionicModal) {
+					$scope.modal = $ionicModal;
+					$ionicModal.show();
+				}, {
+					// Use our scope for the scope of the modal to keep it simple
+					scope: $scope,
+					// The animation we want to use for the modal entrance
+					animation: 'slide-in-up'
+				});
+	}
+	
+	$scope.check = function(text) {
+		var split = text.split(',');
+		console.log(split);
+		if (split.length > 1) {
+			var id = split[0];
+			$http.get('http://www.baldesparisiennes.com/billets/check.php?inviteId='+id).success(function(result) {
+				$scope.openModal(result);
+			});
+			//$scope.openModal({id:split[0],prenom:split[1],nom:split[2], email:split[3]});
+		}			
+	}
+	
+	$scope.search = function(nom, prenom) {
+		if (nom != '' || prenom != '') {
+			$http.get('http://www.baldesparisiennes.com/billets/search.php?nom='+nom+'&prenom='+prenom).success(function(result) {
+				$scope.displayResultSearch(result);
+				$scope.nom = '';
+				$scope.prenom = '';
+			});			
+		}
+	}
+	
+	
+	
     $scope.scanBarcode = function() {
         $cordovaBarcodeScanner.scan().then(function(imageData) {
-            alert(imageData.text);
+			$scope.check(imageData.text);
             console.log("Barcode Format -> " + imageData.format);
             console.log("Cancelled -> " + imageData.cancelled);
         }, function(error) {
@@ -30,4 +106,4 @@ app.controller("BarCodeController", function($scope, $cordovaBarcodeScanner) {
         });
     };
  
-});
+}]);
