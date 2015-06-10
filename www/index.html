@@ -28,43 +28,47 @@
       <ion-header-bar class="bar-assertive">
         <h1 class="title">Bal des parisiennes</h1>
       </ion-header-bar>
-      <ion-content ng-controller="BarCodeController">
-		<div class="list list-inset">
-              <label class="item item-input">
-				<input type="text" placeholder="Pr&#xE9;nom" ng-model="prenom">
-			  </label>
-			  <label class="item item-input">
-				<input type="text" placeholder="Nom" ng-model="nom">
-			  </label>
-          </div>
-          <div class="padding">
-            <button class="button button-block button-assertive icon-left ion-search" ng-click="search(nom, prenom)">
-              Rechercher
-            </button>
-            <p class="text-center">
-              <br>
-			  <br>
-			  <b>Ou</b>
-			  <br>
-			  <br>
-            </p>
-          </div>
-		  <div class="padding">
-			<button class="button button-block button-assertive icon-left ion-qr-scanner" ng-click="scanBarcode()">Scanner</button>
-		</div>
+      <ion-content ng-controller="BalController">
+		<form ng-submit="search(nom, prenom)">
+			<div class="list list-inset">
+				  <label class="item item-input">
+					<input type="text" placeholder="Pr&#xE9;nom" ng-model="prenom">
+				  </label>
+				  <label class="item item-input">
+					<input type="text" placeholder="Nom" ng-model="nom">
+				  </label>
+				  <alert ng-show="noresult" type="warning" close="closeWarning()">Pas d'invité à ce nom</alert>
+			  </div>
+			  <div class="padding">
+				<button class="button button-block icon-left ion-search" type="submit">
+				  Rechercher
+				</button>
+				<p class="text-center">
+				  <br>
+				  <br>
+				  <b>Ou</b>
+				  <br>
+				  <br>
+				</p>
+			  </div>
+			  <div class="padding">
+				<button class="button button-block button-positive icon-left ion-qr-scanner" ng-click="scanBarcode()">Scanner</button>
+			</div>
+		</form>
       </ion-content>
     </ion-pane>
 	<script id="result.html" type="text/ng-template">
 	  <ion-modal-view>
 		<ion-header-bar class="bar-assertive">
 		  <h1 class="title">Résultat</h1>
+		  <div class="button button-clear" ng-click="cancelResult()"><span class="icon ion-close"></span></div>
 		</ion-header-bar>
 		<ion-content>
 		  <div class="list">
-            <div class="item item-button-right" ng-repeat="item in result">
+			<div class="item item-button-right" ng-repeat="item in result">
 				<h2>{{item.prenom}} {{item.nom}}</h2>
 				<p>{{item.email}}</p>
-				<button class="button button-assertive">
+				<button class="button button-balanced" ng-click="openModal(item)">
 				  <i class="icon ion-checkmark-round"></i>
 				</button>
 			</div>
@@ -77,9 +81,11 @@
 	  <ion-modal-view>
 		<ion-header-bar class="bar-assertive">
 		  <h1 class="title">Validation</h1>
+		  <div class="button button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
 		</ion-header-bar>
 		<ion-content>
 		  <div class="list">
+			<alert ng-hide="invite.valid" type="warning">Cet invité est déjà validé</alert>
             <label class="item item-input">
               <span class="input-label">Prenom</span>
               <input type="text" ng-model="invite.prenom">
@@ -94,7 +100,7 @@
             </label>
           </div>
           <div class="padding">
-            <button class="button button-block button-assertive icon-left ion-checkmark-round" ng-click="valid(invite)">
+            <button class="button button-block button-balanced icon-left ion-checkmark-round" ng-disabled="invite.valid" ng-click="valid(invite)">
               Valider
             </button>
             <p class="text-center">
@@ -102,7 +108,7 @@
             </p>
           </div>
 		</ion-content>
-	  </ion-modal-view>
+	  </ion-popover-view>
     </script>
   </body>
 </html>

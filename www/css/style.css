@@ -1,1 +1,13 @@
 /* Empty. Add your own CSS if you like */
+.alert-info {
+  color: #fff !important;
+  background-color: #4a87ee !important;
+}
+.alert-success {
+  color: #fff !important;
+  background-color: #66cc33 !important;
+}
+.alert-warning {
+  color: #fff !important;
+  background-color: #ef4e3a !important;
+}
