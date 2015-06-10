@@ -68,7 +68,8 @@
 			<div class="item item-button-right" ng-repeat="item in result">
 				<h2>{{item.prenom}} {{item.nom}}</h2>
 				<p>{{item.email}}</p>
-				<button class="button button-balanced" ng-click="openModal(item)">
+				<i>{{item.produit}}</i>
+				<button class="button button-balanced" ng-hide="item.valider == 'true'" ng-click="openModal(item)">
 				  <i class="icon ion-checkmark-round"></i>
 				</button>
 			</div>
@@ -85,7 +86,7 @@
 		</ion-header-bar>
 		<ion-content>
 		  <div class="list">
-			<alert ng-hide="invite.valid" type="warning">Cet invité est déjà validé</alert>
+			<alert ng-show="invite.valider == 'true'" type="warning">Cet invité est déjà validé</alert>
             <label class="item item-input">
               <span class="input-label">Prenom</span>
               <input type="text" ng-model="invite.prenom">
@@ -98,9 +99,13 @@
               <span class="input-label">Email</span>
               <input type="text" ng-model="invite.email">
             </label>
+			<label class="item item-input">
+              <span class="input-label">Produit</span>
+              <input type="text" ng-model="invite.produit">
+            </label>
           </div>
           <div class="padding">
-            <button class="button button-block button-balanced icon-left ion-checkmark-round" ng-disabled="invite.valid" ng-click="valid(invite)">
+            <button class="button button-block button-balanced icon-left ion-checkmark-round" ng-disabled="invite.valider == 'true'" ng-click="valid(invite)">
               Valider
             </button>
             <p class="text-center">

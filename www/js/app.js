@@ -36,6 +36,15 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 		$scope.prenom = '';
 	}
 	
+	$scope.closeAll = function() {
+		$scope.modal.hide();
+		if ($scope.resultmodal) {
+			//$scope.resultmodal.hide();
+		}
+		$scope.nom = '';
+		$scope.prenom = '';
+	}
+	
 	$scope.error = function() {
 		var alertPopup = $ionicPopup.alert({
 			 title: 'Error',
@@ -47,7 +56,8 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 				type: 'button-assertive'
 			  }
 			]
-		   }).then(function(res) {
+		   });
+		   alertPopup.then(function(res) {
 			 
 		   });
 		   
@@ -58,6 +68,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 	
 	$scope.valid = function(invite) {
 		$http.get('http://www.baldesparisiennes.com/billets/valid.php?inviteId='+invite.id).success(function(result) {
+			invite.valider = 'true';
 			var alertPopup = $ionicPopup.alert({
 			 title: 'Validation',
 			 scope: $scope,
@@ -68,13 +79,13 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 				type: 'button-assertive'
 			  }
 			]
-		   }).then(function(res) {
-			 console.log('valid');
-			 $scope.modal.hide();
+		   });
+		   alertPopup.then(function(res) {
+			 $scope.closeAll();
 		   });
 		    $timeout(function() {
-				 alertPopup.close(); //close the popup after 3 seconds for some reason
-			  }, 3000);
+				alertPopup.close(); //close the popup after 3 seconds for some reason
+			  }, 2000);
 		})
 		.error(function(error) {
 			$scope.error(error);
@@ -82,7 +93,6 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 	}
 	
 	$scope.openModal = function(invite) {
-		console.log(invite);
 		$scope.invite = invite;
 		$ionicModal.fromTemplateUrl('valid.html',{
 			// Use our scope for the scope of the modal to keep it simple
@@ -96,7 +106,6 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 	}
 	
 	$scope.displayResultSearch = function(result) {
-		console.log(result);
 		$scope.result = result;
 		$ionicModal.fromTemplateUrl('result.html', {
 			// Use our scope for the scope of the modal to keep it simple
