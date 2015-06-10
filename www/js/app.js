@@ -45,7 +45,8 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 		$scope.prenom = '';
 	}
 	
-	$scope.error = function() {
+	$scope.error = function(error) {
+		$scope.error = error.error || error;
 		var alertPopup = $ionicPopup.alert({
 			 title: 'Error',
 			 scope: $scope,
@@ -124,7 +125,12 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 		if (split.length > 1) {
 			var id = split[0];
 			$http.get('http://www.baldesparisiennes.com/billets/check.php?inviteId='+id).success(function(result) {
-				$scope.openModal(result);
+				if (!result) {
+					$scope.error("Ce billet n'existe pas !");
+				}
+				else {
+					$scope.openModal(result);
+				}
 			})
 			.error(function(error) {
 				$scope.error(error);

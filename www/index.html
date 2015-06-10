@@ -37,7 +37,7 @@
 				  <label class="item item-input">
 					<input type="text" placeholder="Nom" ng-model="nom">
 				  </label>
-				  <alert ng-show="noresult" type="warning" close="closeWarning()">Pas d'invité à ce nom</alert>
+				  <alert ng-show="noresult" type="warning" close="closeWarning()">Pas d&apos;invit&#xE9; &#xE0; ce nom</alert>
 			  </div>
 			  <div class="padding">
 				<button class="button button-block icon-left ion-search" type="submit">
@@ -87,7 +87,7 @@
 		<ion-content>
 		  <div class="list">
 			<alert ng-show="invite.valider == 'true'" type="warning">Cet invité est déjà validé</alert>
-            <label class="item item-input">
+			<label class="item item-input">
               <span class="input-label">Prenom</span>
               <input type="text" ng-model="invite.prenom">
             </label>
