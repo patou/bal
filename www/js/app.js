@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('starter', ['ionic', 'ngCordova'])
+var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -21,6 +21,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 .controller("BalController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', '$ionicPopover', '$timeout', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup, $ionicPopover, $timeout) {
 	$scope.nom = '';
 	$scope.prenom = '';
+	var itemsRef = new Firebase("https://vivid-torch-943.firebaseio.com");
 	
 	$scope.cancel = function() {
 		$scope.modal.hide();
@@ -91,6 +92,8 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
 		.error(function(error) {
 			$scope.error(error);
 		});
+		
+		itemsRef.child(''+invite.id).child('valider').set("true");
 	}
 	
 	$scope.openModal = function(invite) {
