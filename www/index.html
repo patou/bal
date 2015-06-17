@@ -120,5 +120,43 @@
 		</ion-content>
 	  </ion-popover-view>
     </script>
+	<script id="valid_client.html" type="text/ng-template">
+	  <ion-modal-view>
+		<ion-header-bar class="bar-assertive">
+		  <h1 class="title">Validation d'un client</h1>
+		  <div class="button button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
+		</ion-header-bar>
+		<ion-content>
+			<div class="list card">
+
+				<div class="item">
+					<h2>{{client.info.civilite}} {{client.info.prenom}} {{client.info.nom}}</h2>
+					<p>{{client.info.email}} {{client.info.telephone}}</p>
+					<p>{{client.info.adresse}} {{client.info.codePostal}} {{client.info.commune}}</p>
+				</div>
+			    <div class="item item-divider">
+					Commandes
+				</div>
+				<li class="item" ng-repeat="commande in client.produits">
+					{{commande.quantite}}x {{commande.nom}}
+				</li>
+				<div class="item item-divider">
+					Invites
+				</div>
+				<li class="item item-checkbox" ng-repeat="invite in client.invites">
+					<label class="checkbox" ng-hide="invite.valider == 'true'">
+					   <input type="checkbox" ng-init="invite.check = true" ng-model="invite.check">
+					</label>
+					{{invite.prenom}} {{invite.nom}}
+				</li>
+
+				<div class="item tabs tabs-secondary">
+					<button type="button" class="tab-item button button-light icon-left ion-chevron-left" ng-click="modalClient.hide();">Annuler</button>
+					<button type="button" class="tab-item button button-balanced icon-left ion-checkmark-round" ng-click="validerInvites(client.invites)">Valider invités</button>
+				</div>
+			</div>
+		</ion-content>
+	  </ion-popover-view>
+    </script>
   </body>
 </html>

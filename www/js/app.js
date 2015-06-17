@@ -83,7 +83,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			]
 		   });
 		   alertPopup.then(function(res) {
-			 $scope.closeAll();
+				$scope.modalClient.hide();
 		   });
 		    $timeout(function() {
 				alertPopup.close(); //close the popup after 3 seconds for some reason
@@ -96,6 +96,48 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		itemsRef.child(''+invite.id).child('valider').set("true");
 	}
 	
+	$scope.validerInvites = function(invites) {
+		var ids = [];
+		var validInvites = [];
+		angular.forEach(invites, function(invite) {
+			if (invite.valider != 'true' && invite.check) {
+				this.push(invite.id);
+				validInvites.push(invite.prenom + ' '+invite.nom);
+				itemsRef.child(''+invite.id).child('valider').set("true");
+			}
+		}, ids);
+		if (ids.length > 0) {
+			console.log(ids);
+			
+			$http.get('http://www.baldesparisiennes.com/billets/valid.php?inviteId='+ids.join(',')).success(function(result) {
+				$scope.validInvites = validInvites;
+				var alertPopup = $ionicPopup.alert({
+				 title: 'Validation',
+				 scope: $scope,
+				 template: '{{validInvites.join(", ")}} ont bien été validé pour venir au bal des parisiennes',
+				 buttons: [
+				  {
+					text: '<b>Ok</b>',
+					type: 'button-assertive'
+				  }
+				]
+			    });
+			    alertPopup.then(function(res) {
+					$scope.modalClient.hide();
+			    });
+				$timeout(function() {
+					alertPopup.close(); //close the popup after 3 seconds for some reason
+				  }, 2000);
+			})
+			.error(function(error) {
+				$scope.error(error);
+			});
+		}
+		else {
+			$scope.modalClient.hide();
+		}
+	};
+	
 	$scope.openModal = function(invite) {
 		$scope.invite = invite;
 		$ionicModal.fromTemplateUrl('valid.html',{
@@ -105,6 +147,19 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			animation: 'slide-in-up'
 		}).then(function(popover) {
 			$scope.modal = popover;
+			popover.show(window);
+		});
+	}
+		
+	$scope.openModalClient = function(client) {
+		$scope.client = client;
+		$ionicModal.fromTemplateUrl('valid_client.html',{
+			// Use our scope for the scope of the modal to keep it simple
+			scope: $scope,
+			// The animation we want to use for the modal entrance
+			animation: 'slide-in-up'
+		}).then(function(popover) {
+			$scope.modalClient = popover;
 			popover.show(window);
 		});
 	}
@@ -122,22 +177,27 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		});
 	}
 	
+	$scope.checkClient = function(id) {
+		$http.get('http://www.baldesparisiennes.com/billets/client.php?idClient='+id).success(function(result) {
+			console.log(result);
+			if (!result) {
+				$scope.error("Ce billet n'existe pas !");
+			}
+			else {
+				$scope.openModalClient(result);
+			}
+		})
+		.error(function(error) {
+			$scope.error(error);
+		});
+	}
+	
 	$scope.check = function(text) {
 		var split = text.split(',');
 		console.log(split);
 		if (split.length > 1) {
 			var id = split[0];
-			$http.get('http://www.baldesparisiennes.com/billets/check.php?inviteId='+id).success(function(result) {
-				if (!result) {
-					$scope.error("Ce billet n'existe pas !");
-				}
-				else {
-					$scope.openModal(result);
-				}
-			})
-			.error(function(error) {
-				$scope.error(error);
-			});
+			$scope.checkClient(id);
 			//$scope.openModal({id:split[0],prenom:split[1],nom:split[2], email:split[3]});
 		}			
 	}
@@ -162,13 +222,18 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	
 	
     $scope.scanBarcode = function() {
-        $cordovaBarcodeScanner.scan().then(function(imageData) {
-			$scope.check(imageData.text);
-            console.log("Barcode Format -> " + imageData.format);
-            console.log("Cancelled -> " + imageData.cancelled);
-        }, function(error) {
-            $scope.error(error);
-        });
+		if(window.cordova && window.cordova.plugins.BarcodeScanner) {
+			$cordovaBarcodeScanner.scan().then(function(imageData) {
+				$scope.check(imageData.text);
+				console.log("Barcode Format -> " + imageData.format);
+				console.log("Cancelled -> " + imageData.cancelled);
+			}, function(error) {
+				$scope.error(error);
+			});
+		}
+		else {
+			$scope.checkClient(window.prompt("Id client", "59"));
+		}
     };
  
 }])
