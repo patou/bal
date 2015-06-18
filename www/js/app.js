@@ -69,7 +69,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	}
 	
 	$scope.valid = function(invite) {
-		$http.get('http://www.baldesparisiennes.com/billets/valid.php?inviteId='+invite.id).success(function(result) {
+		$http.get('http://www.baldesparisiennes.com/admin/valid.php?inviteId='+invite.id).success(function(result) {
 			invite.valider = 'true';
 			var alertPopup = $ionicPopup.alert({
 			 title: 'Validation',
@@ -109,7 +109,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		if (ids.length > 0) {
 			console.log(ids);
 			
-			$http.get('http://www.baldesparisiennes.com/billets/valid.php?inviteId='+ids.join(',')).success(function(result) {
+			$http.get('http://www.baldesparisiennes.com/admin/valid.php?inviteId='+ids.join(',')).success(function(result) {
 				$scope.validInvites = validInvites;
 				var alertPopup = $ionicPopup.alert({
 				 title: 'Validation',
@@ -178,7 +178,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	}
 	
 	$scope.checkClient = function(id) {
-		$http.get('http://www.baldesparisiennes.com/billets/client.php?idClient='+id).success(function(result) {
+		$http.get('http://www.baldesparisiennes.com/admin/client.php?idClient='+id).success(function(result) {
 			console.log(result);
 			if (!result) {
 				$scope.error("Ce billet n'existe pas !");
@@ -205,7 +205,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	$scope.search = function(nom, prenom) {
 		if (nom != '' || prenom != '') {
 			$scope.noresult = false;
-			$http.get('http://www.baldesparisiennes.com/billets/search.php?nom='+nom+'&prenom='+prenom).success(function(result) {
+			$http.get('http://www.baldesparisiennes.com/admin/search.php?nom='+nom+'&prenom='+prenom).success(function(result) {
 				if (!result || result.length == 0) {
 					$scope.noresult = true;
 				}
