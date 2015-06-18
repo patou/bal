@@ -222,7 +222,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	
 	
     $scope.scanBarcode = function() {
-		if(window.cordova && window.cordova.plugins.BarcodeScanner) {
+		if(window.cordova && window.cordova.plugins.barcodeScanner) {
 			$cordovaBarcodeScanner.scan().then(function(imageData) {
 				$scope.check(imageData.text);
 				console.log("Barcode Format -> " + imageData.format);
