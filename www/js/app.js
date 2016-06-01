@@ -22,6 +22,16 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	$scope.nom = '';
 	$scope.prenom = '';
 	var itemsRef = new Firebase("https://vivid-torch-943.firebaseio.com");
+	function authHandler(error, authData) {
+	  if (error) {
+		console.log("Login Failed!", error);
+	  } else {
+		$scope.authenticated = true;
+		console.log("Authentification OK", error);
+		$scope.$digest();
+	  }
+	}
+	itemsRef.authWithPassword({email:'contact@baldesparisiennes.com', password:'bal11parisiennes'}, authHandler);
 	
 	$scope.cancel = function() {
 		$scope.modal.hide();
@@ -83,7 +93,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			]
 		   });
 		   alertPopup.then(function(res) {
-				$scope.modalClient.hide();
+				$scope.modal.hide();
 		   });
 		    $timeout(function() {
 				alertPopup.close(); //close the popup after 3 seconds for some reason
