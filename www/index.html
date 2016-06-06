@@ -108,6 +108,7 @@
               <span class="input-label">Produit</span>
               <input type="text" ng-model="invite.produit">
             </label>
+			<alert ng-show="invite.verification == 'true' && invite.confirmer == 'false'" type="warning"><b>Justificatif !</b> Verifiez le justificatif de cette personne!</alert>
           </div>
           <div class="padding">
             <button class="button button-block button-balanced icon-left ion-checkmark-round" ng-disabled="invite.valider == 'true'" ng-click="valid(invite)">
@@ -133,6 +134,7 @@
 					<h2>{{client.info.civilite}} {{client.info.prenom}} {{client.info.nom}}</h2>
 					<p>{{client.info.email}} {{client.info.telephone}}</p>
 					<p>{{client.info.adresse}} {{client.info.codePostal}} {{client.info.commune}}</p>
+					<alert ng-show="client.info.billetEdit == '1'" type="warning"><b>Billet modifié !</b> Attention le billet a été modifié, veuillez vérifier que les invités sur le billet sont bien les mêmes que ci-dessous!</alert>
 				</div>
 			    <div class="item item-divider">
 					Commandes
@@ -143,13 +145,16 @@
 				<div class="item item-divider">
 					Invites
 				</div>
-				<li class="item item-checkbox" ng-repeat="invite in client.invites">
-					<label class="checkbox" ng-hide="invite.valider == 'true'">
-					   <input type="checkbox" ng-init="invite.check = true" ng-model="invite.check">
-					</label>
-					{{invite.prenom}} {{invite.nom}}
-				</li>
-
+				<ng-repeat ng-repeat="invite in client.invites">
+					<li class="item item-checkbox">
+						<label class="checkbox" ng-hide="invite.valider == 'true'">
+						   <input type="checkbox" ng-init="invite.check = true" ng-model="invite.check">
+						</label>
+						{{invite.prenom}} {{invite.nom}}
+						
+					</li>
+					<li class="item item-divider alert-warning" ng-show="invite.verification == 'true' && invite.confirmer == 'false'"><b>Justificatif !</b> Verifiez le justificatif de cette personne!</li>
+				</ng-repeat>
 				<div class="item tabs tabs-secondary">
 					<button type="button" class="tab-item button button-light icon-left ion-chevron-left" ng-click="modalClient.hide();">Annuler</button>
 					<button type="button" class="tab-item button button-balanced icon-left ion-checkmark-round" ng-click="validerInvites(client.invites)">Valider invités</button>
