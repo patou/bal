@@ -23,7 +23,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
   });
 })
 
-.controller("BalController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', '$ionicPopover', '$timeout', 'Config', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup, $ionicPopover, $timeout, Config) {
+.controller("BalController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', '$ionicLoading', '$ionicPopover', '$timeout', 'Config', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup, $ionicLoading, $ionicPopover, $timeout, Config) {
 	$scope.nom = '';
 	$scope.prenom = '';
 	var itemsRef = new Firebase(Config.firebaseUrl);
@@ -38,6 +38,19 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	}
 	itemsRef.authWithPassword({email:Config.firebaseUser, password:Config.firebasePassword}, authHandler);
 
+  $scope.getProductIcon = function(type) {
+		if (type) {
+			if (type.startsWith("VIP"))
+				return 'ion-android-bar';
+			else if (type.startsWith("DINER"))
+				return 'ion-android-restaurant';
+			else if (type.startsWith("SPECTACLE"))
+				return 'ion-android-film';
+			else if (type.startsWith("SOIREE"))
+				return 'ion-music-note';
+		}
+		return '';
+	};
 	$scope.cancel = function() {
 		$scope.modal.hide();
 	}
@@ -122,8 +135,6 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			}
 		}, ids);
 		if (ids.length > 0) {
-			console.log(ids);
-
 			$http.get(Config.apiUrl + 'valid.php?inviteId='+ids.join(',')).success(function(result) {
 				$scope.validInvites = validInvites;
 				var alertPopup = $ionicPopup.alert({
@@ -193,8 +204,11 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 	}
 
 	$scope.checkClient = function(id) {
+    $ionicLoading.show({
+      template: 'Recherche...'
+    });
 		$http.get(Config.apiUrl + 'client.php?idClient='+id).success(function(result) {
-			console.log(result);
+      $ionicLoading.hide();
 			if (!result) {
 				$scope.error("Ce billet n'existe pas !");
 			}
@@ -203,6 +217,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			}
 		})
 		.error(function(error) {
+      $ionicLoading.hide();
 			$scope.error(error);
 		});
 	}
@@ -213,14 +228,17 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		if (split.length > 1) {
 			var id = split[0];
 			$scope.checkClient(id);
-			//$scope.openModal({id:split[0],prenom:split[1],nom:split[2], email:split[3]});
 		}
 	}
 
 	$scope.search = function(nom, prenom) {
 		if (nom != '' || prenom != '') {
 			$scope.noresult = false;
+      $ionicLoading.show({
+        template: 'Recherche...'
+      });
 			$http.get(Config.apiUrl + 'search.php?nom='+nom+'&prenom='+prenom).success(function(result) {
+        $ionicLoading.hide();
 				if (!result || result.length == 0) {
 					$scope.noresult = true;
 				}
@@ -229,6 +247,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 				}
 			})
 			.error(function(error) {
+        $ionicLoading.hide();
 				$scope.error(error);
 			});
 		}
@@ -240,8 +259,6 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		if(window.cordova && window.cordova.plugins.barcodeScanner) {
 			$cordovaBarcodeScanner.scan().then(function(imageData) {
 				$scope.check(imageData.text);
-				console.log("Barcode Format -> " + imageData.format);
-				console.log("Cancelled -> " + imageData.cancelled);
 			}, function(error) {
 				$scope.error(error);
 			});

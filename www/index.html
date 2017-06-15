@@ -73,12 +73,12 @@
 			<div class="item item-button-right" ng-repeat="item in result">
 				<h2>{{item.prenom}} {{item.nom}}</h2>
 				<p>{{item.email}}</p>
-				<i>{{item.produit}}</i>
+				<i><span class="product-icon icon {{getProductIcon(item.type)}}"></span> {{item.produit}}</i>
 				<button class="button button-balanced" ng-hide="item.valider == 'true'" ng-click="openModal(item)">
 				  <i class="icon ion-checkmark-round"></i>
 				</button>
 			</div>
-            
+
           </div>
 		</ion-content>
 	  </ion-modal-view>
@@ -106,6 +106,7 @@
             </label>
 			<label class="item item-input">
               <span class="input-label">Produit</span>
+              <span class="product-icon icon {{getProductIcon(invite.type)}}"></span>
               <input type="text" ng-model="invite.produit">
             </label>
 			<alert ng-show="invite.verification == 'true' && invite.confirmer == 'false'" type="warning"><b>Justificatif !</b> Verifiez le justificatif de cette personne!</alert>
@@ -140,7 +141,7 @@
 					Commandes
 				</div>
 				<li class="item" ng-repeat="commande in client.produits">
-					{{commande.quantite}}x {{commande.nom}}
+					{{commande.quantite}}x <span class="product-icon icon {{getProductIcon(commande.type)}}"> {{commande.nom}}
 				</li>
 				<div class="item item-divider">
 					Invites
@@ -150,8 +151,8 @@
 						<label class="checkbox" ng-hide="invite.valider == 'true'">
 						   <input type="checkbox" ng-init="invite.check = true" ng-model="invite.check">
 						</label>
-						{{invite.prenom}} {{invite.nom}}
-						
+						<span class="product-icon icon {{getProductIcon(invite.type)}}"></span> {{invite.prenom}} {{invite.nom}}
+
 					</li>
 					<li class="item item-divider alert-warning" ng-show="invite.verification == 'true' && invite.confirmer == 'false'"><b>Justificatif !</b> Verifiez le justificatif de cette personne!</li>
 				</ng-repeat>
