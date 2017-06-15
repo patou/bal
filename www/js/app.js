@@ -4,13 +4,13 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
-.constant('Config': {
+.constant('Config', {
   firebaseUrl: 'https://bal-des-parisiennes.firebaseio.com/',
   firebaseUser: 'contact@baldesparisiennes.com',
-  firebasePassword: 'bal17parisiennes'
+  firebasePassword: 'bal17parisiennes',
   apiUrl: 'http://www.baldesparisiennes.com/billetterie/admin/'
 })
-.run(function($ionicPlatform) {
+.run(['$ionicPlatform', '$firebaseAuth', 'Config', function($ionicPlatform, $firebaseAuth, Config) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,23 +20,18 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+    $firebaseAuth().$signInWithEmailAndPassword(Config.firebaseUser, Config.firebasePassword).then(function(firebaseUse) {
+      console.log("Authentification OK");
+    }).catch(function(error) {
+      console.log("Login Failed!");
+      console.log(error);
+    });
   });
-})
-
+}])
 .controller("BalController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', '$ionicLoading', '$ionicPopover', '$timeout', 'Config', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup, $ionicLoading, $ionicPopover, $timeout, Config) {
 	$scope.nom = '';
 	$scope.prenom = '';
-	var itemsRef = new Firebase(Config.firebaseUrl);
-	function authHandler(error, authData) {
-	  if (error) {
-		console.log("Login Failed!", error);
-	  } else {
-		$scope.authenticated = true;
-		console.log("Authentification OK", error);
-		$scope.$digest();
-	  }
-	}
-	itemsRef.authWithPassword({email:Config.firebaseUser, password:Config.firebasePassword}, authHandler);
+	var itemsRef = firebase.database().ref();
 
   $scope.getProductIcon = function(type) {
 		if (type) {
