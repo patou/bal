@@ -4,7 +4,12 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
-
+.constant('Config': {
+  firebaseUrl: 'https://bal-des-parisiennes.firebaseio.com/',
+  firebaseUser: 'contact@baldesparisiennes.com',
+  firebasePassword: 'bal17parisiennes'
+  apiUrl: 'http://www.baldesparisiennes.com/billetterie/admin/'
+})
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -18,10 +23,10 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
   });
 })
 
-.controller("BalController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', '$ionicPopover', '$timeout', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup, $ionicPopover, $timeout) {
+.controller("BalController", ['$scope', '$cordovaBarcodeScanner', '$http', '$ionicModal', '$ionicPopup', '$ionicPopover', '$timeout', 'Config', function($scope, $cordovaBarcodeScanner, $http, $ionicModal, $ionicPopup, $ionicPopover, $timeout, Config) {
 	$scope.nom = '';
 	$scope.prenom = '';
-	var itemsRef = new Firebase("https://vivid-torch-943.firebaseio.com");
+	var itemsRef = new Firebase(Config.firebaseUrl);
 	function authHandler(error, authData) {
 	  if (error) {
 		console.log("Login Failed!", error);
@@ -31,22 +36,22 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		$scope.$digest();
 	  }
 	}
-	itemsRef.authWithPassword({email:'contact@baldesparisiennes.com', password:'bal11parisiennes'}, authHandler);
-	
+	itemsRef.authWithPassword({email:Config.firebaseUser, password:Config.firebasePassword}, authHandler);
+
 	$scope.cancel = function() {
 		$scope.modal.hide();
 	}
-	
+
 	$scope.closeWarning = function() {
 		$scope.noresult = false;
 	}
-	
+
 	$scope.cancelResult = function() {
 		$scope.resultmodal.hide();
 		$scope.nom = '';
 		$scope.prenom = '';
 	}
-	
+
 	$scope.closeAll = function() {
 		$scope.modal.hide();
 		if ($scope.resultmodal) {
@@ -55,7 +60,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		$scope.nom = '';
 		$scope.prenom = '';
 	}
-	
+
 	$scope.error = function(error) {
 		$scope.error = error.error || error;
 		var alertPopup = $ionicPopup.alert({
@@ -70,16 +75,16 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			]
 		   });
 		   alertPopup.then(function(res) {
-			 
+
 		   });
-		   
+
 		$timeout(function() {
 			 alertPopup.close(); //close the popup after 3 seconds for some reason
 		  }, 3000);
 	}
-	
+
 	$scope.valid = function(invite) {
-		$http.get('http://www.baldesparisiennes.com/admin/valid.php?inviteId='+invite.id).success(function(result) {
+		$http.get(Config.apiUrl + 'valid.php?inviteId='+invite.id).success(function(result) {
 			invite.valider = 'true';
 			var alertPopup = $ionicPopup.alert({
 			 title: 'Validation',
@@ -102,10 +107,10 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		.error(function(error) {
 			$scope.error(error);
 		});
-		
+
 		itemsRef.child(''+invite.id).child('valider').set("true");
 	}
-	
+
 	$scope.validerInvites = function(invites) {
 		var ids = [];
 		var validInvites = [];
@@ -118,8 +123,8 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 		}, ids);
 		if (ids.length > 0) {
 			console.log(ids);
-			
-			$http.get('http://www.baldesparisiennes.com/admin/valid.php?inviteId='+ids.join(',')).success(function(result) {
+
+			$http.get(Config.apiUrl + 'valid.php?inviteId='+ids.join(',')).success(function(result) {
 				$scope.validInvites = validInvites;
 				var alertPopup = $ionicPopup.alert({
 				 title: 'Validation',
@@ -147,7 +152,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			$scope.modalClient.hide();
 		}
 	};
-	
+
 	$scope.openModal = function(invite) {
 		$scope.invite = invite;
 		$ionicModal.fromTemplateUrl('valid.html',{
@@ -160,7 +165,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			popover.show(window);
 		});
 	}
-		
+
 	$scope.openModalClient = function(client) {
 		$scope.client = client;
 		$ionicModal.fromTemplateUrl('valid_client.html',{
@@ -173,7 +178,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			popover.show(window);
 		});
 	}
-	
+
 	$scope.displayResultSearch = function(result) {
 		$scope.result = result;
 		$ionicModal.fromTemplateUrl('result.html', {
@@ -186,9 +191,9 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			modal.show();
 		});
 	}
-	
+
 	$scope.checkClient = function(id) {
-		$http.get('http://www.baldesparisiennes.com/admin/client.php?idClient='+id).success(function(result) {
+		$http.get(Config.apiUrl + 'client.php?idClient='+id).success(function(result) {
 			console.log(result);
 			if (!result) {
 				$scope.error("Ce billet n'existe pas !");
@@ -201,7 +206,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			$scope.error(error);
 		});
 	}
-	
+
 	$scope.check = function(text) {
 		var split = text.split(',');
 		console.log(split);
@@ -209,13 +214,13 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			var id = split[0];
 			$scope.checkClient(id);
 			//$scope.openModal({id:split[0],prenom:split[1],nom:split[2], email:split[3]});
-		}			
+		}
 	}
-	
+
 	$scope.search = function(nom, prenom) {
 		if (nom != '' || prenom != '') {
 			$scope.noresult = false;
-			$http.get('http://www.baldesparisiennes.com/admin/search.php?nom='+nom+'&prenom='+prenom).success(function(result) {
+			$http.get(Config.apiUrl + 'search.php?nom='+nom+'&prenom='+prenom).success(function(result) {
 				if (!result || result.length == 0) {
 					$scope.noresult = true;
 				}
@@ -225,12 +230,12 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			})
 			.error(function(error) {
 				$scope.error(error);
-			});			
+			});
 		}
 	}
-	
-	
-	
+
+
+
     $scope.scanBarcode = function() {
 		if(window.cordova && window.cordova.plugins.barcodeScanner) {
 			$cordovaBarcodeScanner.scan().then(function(imageData) {
@@ -245,7 +250,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova', 'firebase'])
 			$scope.checkClient(window.prompt("Id client", "59"));
 		}
     };
- 
+
 }])
 .controller('IonicAlertController', ['$scope', '$attrs', function ($scope, $attrs) {
 	$scope.closeable = 'close' in $attrs;
